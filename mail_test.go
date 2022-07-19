@@ -1,15 +1,17 @@
 package mail
 
 import (
+	"fmt"
 	"testing"
 )
 
 func TestReadConfig(t *testing.T) {
-	_, err := ReadConfig("./config.json")
+	c, err := ReadConfig("./config.json")
 	if err != nil {
 		t.Errorf("ReadConfig() error = %v", err)
 		return
 	}
+	fmt.Println(c)
 }
 
 func TestSendEmail(t *testing.T) {
