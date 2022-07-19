@@ -9,28 +9,33 @@ import (
 	"strings"
 )
 
-type Config struct {
+type MailConfig struct {
 	Login    string `json:"login"`
 	Password string `json:"password"`
 	Host     string `json:"host"`
 	Port     int    `json:"port"`
 }
 
-func ReadConfig(fileName string) (Config, error) {
-	cfg := Config{}
+type Config struct {
+	Configs []MailConfig `json:"configs"`
+}
+
+func ReadConfig(fileName string) (MailConfig, error) {
+	var config Config
 	b, err := ioutil.ReadFile(fileName)
 	if err != nil {
-		return cfg, fmt.Errorf("readConfig: %w", err)
+		return MailConfig{}, fmt.Errorf("readConfig: %w", err)
 	}
 	reader := strings.NewReader(string(b))
 
-	if err := json.NewDecoder(reader).Decode(&cfg); err != nil {
-		return cfg, fmt.Errorf("readConfig: %w", err)
+	if err := json.NewDecoder(reader).Decode(&config); err != nil {
+		return MailConfig{}, fmt.Errorf("readConfig: %w", err)
 	}
-	return cfg, nil
+	c := config.Configs[0]
+	return c, nil
 }
 
-func SendEmail(config Config, emailTo, subject, msg string) error {
+func SendEmail(config MailConfig, emailTo, subject, msg string) error {
 	if emailTo == "" || config.Login == "" || config.Password == "" {
 		return nil
 	}
